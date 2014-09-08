@@ -8,6 +8,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.box = "deb/jessie"
 
+  # see: https://coderwall.com/p/qtbi5a
+  config.ssh.shell = "bash -c 'BASH_ENV=/etc/profile exec bash'"
+
   # Apache port
   config.vm.network "forwarded_port", guest: 80, host: 8880
   # validator.nu port

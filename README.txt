@@ -20,6 +20,16 @@ CSS validator
 - http://www.css-validator.org/
 - http://localhost:8080/css-validator/
 
+Compile css-validator WAR file
+------------------------------
+
+:
+    apt-get install ant cvs
+
+    curl -L -o css-validator-standalone.zip  https://github.com/w3c/css-validator-standalone/archive/master.zip
+    unzip css-validator-standalone.zip
+    cd css-validator-standalone-master/
+
 
 Achecker - WCAG / Stanca act
 ============================

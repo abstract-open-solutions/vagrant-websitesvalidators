@@ -3,22 +3,28 @@ echo "============"
 # We don't want debconf prompts
 export DEBIAN_FRONTEND=noninteractive
 export PERL_MM_USE_DEFAULT=1
-export JAVA_HOME=/usr/lib/jvm/java-6-openjdk
+# export JAVA_HOME=/usr/lib/jvm/java-6-openjdk
 
 
 echo "Running initial apt-get update"
 apt-get -y update >/dev/null
 
 echo "Installing system dependencies"
-apt-get -y install build-essential git vim screen \
+apt-get -y install build-essential git vim screen libxml2-dev zlib1g-dev \
     tomcat7  tomcat7-admin default-jdk \
     mysql-client mysql-server \
-    php5-common libapache2-mod-php5 php5-gd php5-cli php5-mysql
+    php5-common libapache2-mod-php5 php5-gd php5-cli php5-mysql \
     opensp libosp-dev libtidy-dev \
     apache2-mpm-prefork libapache2-mod-perl2 libxml-libxml-perl
 
 
-echo "Configuring MySQL"
+echo "Installing tidyp-1.04"
+curl -s -L -O https://github.com/downloads/petdance/tidyp/tidyp-1.04.tar.gz
+tar -xzf tidyp-1.04.tar.gz
+cd tidyp-1.04 && ./configure && make && make install && ldconfig
+
+
+# echo "Configuring MySQL"
 # TODO: set root password
 
 
@@ -32,18 +38,18 @@ cpan Bundle::W3C::Validator
 
 echo "Downloading and installing w3c validator"
 mkdir -p /usr/local/validator
-curl -O http://validator.w3.org/validator.tar.gz
+curl -s -O http://validator.w3.org/validator.tar.gz
 tar zxvf validator.tar.gz
 mv validator-1.3/{htdocs,share,httpd} /usr/local/validator
 
-curl -O http://validator.w3.org/sgml-lib.tar.gz
+curl -s -O http://validator.w3.org/sgml-lib.tar.gz
 tar zxvf sgml-lib.tar.gz
 mv validator-1.1/htdocs/sgml-lib/ /usr/local/validator/htdocs/
 
 
 echo "Installing validator.nu for HTML5"
 # see: http://about.validator.nu/#src
-curl -L -O https://github.com/validator/validator.github.io/releases/download/20140222/vnu-20140222.zip
+curl -s -L -O https://github.com/validator/validator.github.io/releases/download/20140222/vnu-20140222.zip
 unzip vnu-20140222.zip
 mv vnu /usr/local/
 
@@ -65,7 +71,7 @@ cp /home/vagrant/config/css-validator.war /var/lib/tomcat7/webapps/
 
 
 echo "Installing AChecker"
-curl -L -o achecker.zip https://github.com/atutor/AChecker/archive/master.zip
+curl -s -L -o achecker.zip https://github.com/atutor/AChecker/archive/master.zip
 unzip achecker.zip
 mv AChecker-master /var/www/html/achecker
 
@@ -88,6 +94,7 @@ service apache2 restart
 # TODO: it is necessary()
 # update-rc.d tomcat7 enable
 service tomcat7 restart
-update-rc.d vnu enable
+service vnu start
+update-rc.d vnu defaults
 
 echo "Validator installed"
